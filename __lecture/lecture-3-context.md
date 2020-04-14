@@ -22,30 +22,30 @@ const App = () => {
 
   return (
     <>
-      <Home />
+      <Home user={user} setUser={setUser}/>
       <Sidebar user={user} />
     </>
   );
 };
 
-const Home = () => {
+const Home = ({ user, setUser }) => {
   return (
     <>
-      <Header />
+      <Header user={user} setUser={setUser}/>
       <MainContent />
     </>
   );
 };
 
-const Header = () => {
+const Header = ({ user, setUser }) => {
   return (
     <header>
-      <Navigation />
+      <Navigation user={user} setUser={setUser}/>
     </header>
   );
 };
 
-const Navigation = () => {
+const Navigation = ({ user, setUser }) => {
   return (
     <nav>
       <ul>
@@ -58,7 +58,7 @@ const Navigation = () => {
           </li>
         ) : (
           <li>
-            <LoginDialogTrigger />
+            <LoginDialogTrigger user={user} setUser={setUser}/>
           </li>
         )}
       </ul>
@@ -66,7 +66,7 @@ const Navigation = () => {
   );
 };
 
-const LoginDialogTrigger = () => {
+const LoginDialogTrigger = ({ user, setUser }) => {
   // Some stuff to show a button and handle showing
   // the dialog on click
 
@@ -192,6 +192,62 @@ const Navigation = ({ user, setUser }) => {
   );
 };
 ```
+```jsx
+//answer
+
+//in App.js
+const export UserContext = React.useContext(null);
+
+const App = () => {
+  const [user, setUser] = React.useState({username: "Alfafa"})
+
+  return <UserContext.Provider value ={{ user, setUser }}> 
+    <Home />
+  </UserContext.Provider>
+};
+
+const Home = () => {
+  return (
+    <>
+      <Header />
+      <MainContent />
+    </>
+  );
+};
+
+const Header = () => {
+  return (
+    <header>
+      <Navigation />
+    </header>
+  );
+};
+
+//in Navigation.js
+import { UserContext } from "./App";
+
+const Navigation = () => {
+  const { user, setUser } = React.useContext(UserContext);
+  
+  return (
+    <nav>
+      <ul>
+        <li>
+          <Link to="/">Home</Link>
+        </li>
+        <li>
+          <Link to="/about">About</Link>
+        </li>
+        {user && (
+          <li>
+            <button onClick={() => setUser(null)}>Log out</button>
+          </li>
+        )}
+      </ul>
+    </nav>
+  );
+};
+```
 
 ---
 
@@ -221,6 +277,53 @@ const MainContent = ({ dialog, setDialog }) => {
 };
 
 const Dialog = ({ currentDialog }) => {
+  if (!currentDialog) {
+    return null;
+  }
+
+  return <div>{/* Do stuff with currentDialog */}</div>;
+};
+```
+```jsx
+//answer
+const export DialogContext = React.useContext(null);
+
+const App = () => {
+  const [dialog, setDialog] = React.useState(null);
+
+  return (
+    <DialogContext.Provider value={{ dialog, setDialog }}>
+      <MainContent />
+      <Dialog />
+    </DialogContext.Provider>
+  );
+};
+
+//in MainContent.js
+import { DialogContext } from "./App";
+
+const MainContent = () => {
+  const { setDialog } = useContext(DialogContext);
+
+  return (
+    <>
+      <Sidebar>
+        <Link>Home</Link>
+        <Link>About</Link>
+        <LogInButton afterLogin={() => setDialog('login-success')} />
+      </Sidebar>
+      <Main>Stuff</Main>
+    </>
+  );
+};
+
+//in Dialog.js
+import { DialogContext } from "./App";
+
+const Dialog = () => {
+
+  const  currentDialog  = useContext(DialogContext).dialog;
+
   if (!currentDialog) {
     return null;
   }

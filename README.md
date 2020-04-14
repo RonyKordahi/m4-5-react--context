@@ -31,7 +31,7 @@ This exercuse is left as an exercise. The main goal of this exercise is to **cre
 - For persisting across closing and reopening the tab, you can use the localStorage API. You can create a `usePersistedState` hook, which works exactly the same as the `React.useState` hook, but which also stores the value in localStorage on every update, and reads the initial value from localStorage. It should be used like this:
 
 ```js
-const [numCookies, setNumCookies] = usePersistedState(1000, "num-cookies");
+const [numCookies, setNumCookies] = usePersistedState("num-cookies", 1000);
 ```
 
 (That second parameter is the name, to be used as a local storage key)
